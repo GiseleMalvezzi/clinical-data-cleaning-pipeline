@@ -1,11 +1,14 @@
 # ==============================================================================
 # Script: 02_validate_data.R
+# Project: Clinical Data Cleaning Pipeline
 # Description: Initial validation of clinical data
 # - Missing values check
 # - Duplicate identification
 # - Age range validation (if Age column exists)
 # - Sex variable category validation
 # - Export missing values report by variable
+# Author: Gisele Malvezzi
+# Date: 2025-10-07
 # ==============================================================================
 
 # Loading packages -------------------------------------------------------------
@@ -112,6 +115,7 @@ if (!dir.exists("reports/data_quality")) {
 # Export report
 readr::write_csv(missing_by_variable, 
                  "reports/data_quality/missing_by_variable.csv")
+
 message("Report exported: reports/data_quality/missing_by_variable.csv")
 
 # FINAL SUMMARY ----------------------------------------------------------------
