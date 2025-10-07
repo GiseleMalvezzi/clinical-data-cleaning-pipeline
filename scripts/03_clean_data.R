@@ -1,8 +1,9 @@
 # ==============================================================================
 # Script: 03_clean_data.R
+# Project: Clinical Data Cleaning Pipeline
 # Description: Clinical data cleaning - duplicates removal,
 #              NA values treatment, variable standardization
-# Author: GiseleMalvezzi
+# Author: Gisele Malvezzi
 # Date: 2025-10-07
 # ==============================================================================
 
@@ -20,7 +21,6 @@ cat("========================================\n\n")
 # ==============================================================================
 # 1. IMPORT DATA
 # ==============================================================================
-
 cat("[1/6] Loading validated data...\n")
 
 # Check if file exists
@@ -37,7 +37,6 @@ cat("    - Original records:", nrow(data), "\n\n")
 # ==============================================================================
 # 2. REMOVE DUPLICATES
 # ==============================================================================
-
 cat("[2/6] Removing duplicates...\n")
 
 # Count duplicates before removal
@@ -53,7 +52,6 @@ cat("    - Records after removal:", nrow(data_clean), "\n\n")
 # ==============================================================================
 # 3. REMOVE ROWS WITH NA Patient_ID
 # ==============================================================================
-
 cat("[3/6] Removing rows with missing Patient_ID...\n")
 
 # Count records with NA Patient_ID
@@ -69,7 +67,6 @@ cat("    - Remaining records:", nrow(data_clean), "\n\n")
 # ==============================================================================
 # 4. FILTER AGE OUTSIDE EXPECTED RANGE
 # ==============================================================================
-
 cat("[4/6] Filtering ages outside expected range...\n")
 
 # Define expected range (0-120 years)
@@ -92,7 +89,6 @@ cat("    - Remaining records:", nrow(data_clean), "\n\n")
 # ==============================================================================
 # 5. STANDARDIZE Sex VARIABLE
 # ==============================================================================
-
 cat("[5/6] Standardizing Sex variable...\n")
 
 # Show unique values before standardization
@@ -114,7 +110,6 @@ cat("    - Distribution: Male =", sum(data_clean$Sex == "Male"),
 # ==============================================================================
 # 6. SAVE CLEAN DATA
 # ==============================================================================
-
 cat("[6/6] Saving clean data...\n")
 
 # Create directory if it doesn't exist
@@ -133,7 +128,6 @@ cat("    - Total variables:", ncol(data_clean), "\n\n")
 # ==============================================================================
 # FINAL SUMMARY
 # ==============================================================================
-
 cat("========================================\n")
 cat("CLEANING SUMMARY\n")
 cat("========================================\n")
