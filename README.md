@@ -8,13 +8,13 @@
 - **Missing value handling** with configurable imputation strategies
 - **Text data normalization** (case standardization, whitespace removal)
 - **Data harmonization** across multiple sources
-### ✅ Quality Control
+### Quality Control
 - **Comprehensive quality reports** with visual summaries
 - **Statistical descriptions** and distribution analyses
 - **Inconsistency detection** across related fields
 - **Protocol deviation identification** and flagging
 - **Data completeness metrics** tracking
-### 📄 Documentation & Compliance
+### Documentation & Compliance
 - **Detailed operation logs** for every transformation
 - **Complete audit trail** for regulatory compliance
 - **Data lineage tracking** from raw to processed data
@@ -32,7 +32,7 @@ graph LR
     F --> G
 ```
 ---
-## 🚀 Setup and Running Instructions
+## Setup and Running Instructions
 ### Prerequisites
 Ensure you have **R version 4.0 or higher** installed on your system. You can download R from [CRAN](https://www.r-project.org/).
 ### Installation
