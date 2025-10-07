@@ -1,7 +1,8 @@
 # ==============================================================================
 # Script: 04_quality_checks.R
+# Project: Clinical Data Cleaning Pipeline
 # Description: Perform quality checks on clean clinical data
-# Author: GiseleMalvezzi
+# Author: Gisele Malvezzi
 # Date: 2025-10-07
 # ==============================================================================
 
@@ -15,7 +16,6 @@ data_dir <- "data/processed"
 # ==============================================================================
 # 1. LOAD CLEAN DATA
 # ==============================================================================
-
 cat("\n=== STARTING DATA QUALITY CONTROL ===\n\n")
 
 # Read clean data file
@@ -32,7 +32,6 @@ cat("Dimensions:", nrow(cancer_data_clean), "rows x",
 # ==============================================================================
 # 2. SUMMARY ANALYSIS WITH SKIMR
 # ==============================================================================
-
 cat("=== CLEAN DATA OVERVIEW ===\n\n")
 
 # Generate complete overview
@@ -43,7 +42,6 @@ cat("\n")
 # ==============================================================================
 # 3. ADDITIONAL QUALITY CHECKS
 # ==============================================================================
-
 cat("=== QUALITY CHECKS ===\n\n")
 
 # Check missing values by column
@@ -78,7 +76,6 @@ cat("\n")
 # ==============================================================================
 # 4. COMPLETION MESSAGE
 # ==============================================================================
-
 cat("\n=== QUALITY CONTROL COMPLETED SUCCESSFULLY ===\n\n")
 
 cat("Final summary:\n")
