@@ -148,7 +148,7 @@ import_log <- list(
 
 # Saving log
 log_file <- paste0("reports/audit_trails/import_log_", 
-                      format(Sys.time(), "%Y%m%d_%H%M%S"), ".rds")
+                   format(Sys.time(), "%Y%m%d_%H%M%S"), ".rds")
 
 if (!dir.exists("reports/audit_trails/")) {
   dir.create("reports/audit_trails/", recursive = TRUE)
