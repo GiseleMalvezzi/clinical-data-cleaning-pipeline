@@ -1,93 +1,16 @@
-name: ci-check
+name: R-CMD-check
 
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+on: [push, pull_request]
 
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Setup R
-        uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: '4.3.0'
-      
-      - name: Install system dependencies
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+      - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
-      
-      - name: Install R dependencies
-        run: |
-          if (file.exists('DESCRIPTION')) {
-            install.packages('remotes')
-            remotes::install_deps(dependencies = TRUE)
-          } else {
-            # Install key packages from the pipeline
-            install.packages(c(
-              'tidyverse',
-              'data.table',
-              'validate',
-              'janitor',
-              'lubridate',
-              'readxl',
-              'writexl',
-              'yaml',
-              'rmarkdown',
-              'knitr',
-              'assertr',
-              'skimr',
-              'naniar',
-              'visdat'
-            ), repos = 'https://cloud.r-project.org')
-          }
-        shell: Rscript {0}
-      
-      - name: Check R scripts
-        run: |
-          # Check all R scripts for syntax errors
-          r_files <- list.files(path = c('scripts', 'functions', '.'), 
-                                pattern = '\\.R$', 
-                                recursive = TRUE, 
-                                full.names = TRUE)
-          
-          if (length(r_files) > 0) {
-            cat('Checking R scripts for syntax errors...\n')
-            for (file in r_files) {
-              cat('Checking:', file, '\n')
-              tryCatch({
-                parse(file)
-                cat('  ✓ OK\n')
-              }, error = function(e) {
-                cat('  ✗ ERROR:', conditionMessage(e), '\n')
-                quit(status = 1)
-              })
-            }
-            cat('\nAll R scripts passed syntax check!\n')
-          } else {
-            cat('No R scripts found to check.\n')
-          }
-        shell: Rscript {0}
-      
-      - name: Run R CMD check (if package structure exists)
-        run: |
-          if [ -f "DESCRIPTION" ]; then
-            echo "Package structure detected, running R CMD check..."
-            R CMD build .
-            R CMD check *.tar.gz --no-manual
-          else
-            echo "No DESCRIPTION file found. Skipping R CMD check."
-            echo "This is a script-based project, not a package."
-          fi
-        shell: bash
+          Rscript -e "install.packages('devtools')"
+          Rscript -e "devtools::install_deps(dep=TRUE)"
+      - name: Check
+        run: R CMD check .
