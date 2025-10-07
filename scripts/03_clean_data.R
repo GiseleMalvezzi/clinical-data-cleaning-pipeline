@@ -1,149 +1,149 @@
 # ==============================================================================
 # Script: 03_clean_data.R
-# Descrição: Limpeza de dados oncológicos - remoção de duplicatas,
-#            tratamento de valores NA, padronização de variáveis
-# Autor: GiseleMalvezzi
-# Data: 2025-10-07
+# Description: Clinical data cleaning - duplicates removal,
+#              NA values treatment, variable standardization
+# Author: GiseleMalvezzi
+# Date: 2025-10-07
 # ==============================================================================
 
-# Carregar pacotes necessários
+# Load necessary packages
 library(dplyr)
 library(readr)
 
-# Limpar ambiente
+# Clear environment
 rm(list = ls())
 
 cat("\n========================================\n")
-cat("Iniciando limpeza de dados oncológicos\n")
+cat("Starting clinical data cleaning\n")
 cat("========================================\n\n")
 
 # ==============================================================================
-# 1. IMPORTAR DADOS
+# 1. IMPORT DATA
 # ==============================================================================
 
-cat("[1/6] Carregando dados validados...\n")
+cat("[1/6] Loading validated data...\n")
 
-# Verificar se o arquivo existe
+# Check if file exists
 if (!file.exists("data/raw/cancer_data.csv")) {
-  stop("Erro: Arquivo data/raw/cancer_data.csv não encontrado!")
+  stop("Error: File data/raw/cancer_data.csv not found!")
 }
 
-# Importar dados
+# Import data
 data <- read_csv("data/raw/cancer_data.csv", show_col_types = FALSE)
 
-cat("    ✓ Dados carregados com sucesso\n")
-cat("    - Registros originais:", nrow(data), "\n\n")
+cat("    ✓ Data loaded successfully\n")
+cat("    - Original records:", nrow(data), "\n\n")
 
 # ==============================================================================
-# 2. REMOVER DUPLICATAS
+# 2. REMOVE DUPLICATES
 # ==============================================================================
 
-cat("[2/6] Removendo duplicatas...\n")
+cat("[2/6] Removing duplicates...\n")
 
-# Contar duplicatas antes da remoção
-duplicatas <- sum(duplicated(data))
+# Count duplicates before removal
+duplicates <- sum(duplicated(data))
 
-# Remover duplicatas completas
+# Remove complete duplicates
 data_clean <- data %>%
   distinct()
 
-cat("    ✓ Duplicatas removidas:", duplicatas, "\n")
-cat("    - Registros após remoção:", nrow(data_clean), "\n\n")
+cat("    ✓ Duplicates removed:", duplicates, "\n")
+cat("    - Records after removal:", nrow(data_clean), "\n\n")
 
 # ==============================================================================
-# 3. REMOVER LINHAS COM Patient_ID NA
+# 3. REMOVE ROWS WITH NA Patient_ID
 # ==============================================================================
 
-cat("[3/6] Removendo linhas com Patient_ID ausente...\n")
+cat("[3/6] Removing rows with missing Patient_ID...\n")
 
-# Contar registros com Patient_ID NA
+# Count records with NA Patient_ID
 na_patient_id <- sum(is.na(data_clean$Patient_ID))
 
-# Remover linhas onde Patient_ID é NA
+# Remove rows where Patient_ID is NA
 data_clean <- data_clean %>%
   filter(!is.na(Patient_ID))
 
-cat("    ✓ Registros com Patient_ID NA removidos:", na_patient_id, "\n")
-cat("    - Registros restantes:", nrow(data_clean), "\n\n")
+cat("    ✓ Records with NA Patient_ID removed:", na_patient_id, "\n")
+cat("    - Remaining records:", nrow(data_clean), "\n\n")
 
 # ==============================================================================
-# 4. FILTRAR IDADE FORA DO ESPERADO
+# 4. FILTER AGE OUTSIDE EXPECTED RANGE
 # ==============================================================================
 
-cat("[4/6] Filtrando idades fora do intervalo esperado...\n")
+cat("[4/6] Filtering ages outside expected range...\n")
 
-# Definir intervalo esperado (0-120 anos)
-idade_min <- 0
-idade_max <- 120
+# Define expected range (0-120 years)
+min_age <- 0
+max_age <- 120
 
-# Contar registros fora do intervalo
-idades_invalidas <- sum(data_clean$Age < idade_min | 
-                        data_clean$Age > idade_max | 
-                        is.na(data_clean$Age))
+# Count records outside range
+invalid_ages <- sum(data_clean$Age < min_age | 
+                    data_clean$Age > max_age | 
+                    is.na(data_clean$Age))
 
-# Filtrar idades válidas
+# Filter valid ages
 data_clean <- data_clean %>%
-  filter(Age >= idade_min & Age <= idade_max & !is.na(Age))
+  filter(Age >= min_age & Age <= max_age & !is.na(Age))
 
-cat("    ✓ Registros com idade inválida removidos:", idades_invalidas, "\n")
-cat("    - Intervalo válido: [", idade_min, ",", idade_max, "]\n")
-cat("    - Registros restantes:", nrow(data_clean), "\n\n")
+cat("    ✓ Records with invalid age removed:", invalid_ages, "\n")
+cat("    - Valid range: [", min_age, ",", max_age, "]\n")
+cat("    - Remaining records:", nrow(data_clean), "\n\n")
 
 # ==============================================================================
-# 5. PADRONIZAR VARIÁVEL Sex
+# 5. STANDARDIZE Sex VARIABLE
 # ==============================================================================
 
-cat("[5/6] Padronizando variável Sex...\n")
+cat("[5/6] Standardizing Sex variable...\n")
 
-# Mostrar valores únicos antes da padronização
-cat("    - Valores únicos antes:", paste(unique(data_clean$Sex), collapse = ", "), "\n")
+# Show unique values before standardization
+cat("    - Unique values before:", paste(unique(data_clean$Sex), collapse = ", "), "\n")
 
-# Padronizar Sex: M -> Male, F -> Female
+# Standardize Sex: M -> Male, F -> Female
 data_clean <- data_clean %>%
   mutate(Sex = case_when(
     Sex == "M" ~ "Male",
     Sex == "F" ~ "Female",
-    TRUE ~ Sex  # Manter outros valores como estão
+    TRUE ~ Sex  # Keep other values as is
   ))
 
-cat("    ✓ Variável Sex padronizada\n")
-cat("    - Valores únicos depois:", paste(unique(data_clean$Sex), collapse = ", "), "\n")
-cat("    - Distribuição: Male =", sum(data_clean$Sex == "Male"), 
+cat("    ✓ Sex variable standardized\n")
+cat("    - Unique values after:", paste(unique(data_clean$Sex), collapse = ", "), "\n")
+cat("    - Distribution: Male =", sum(data_clean$Sex == "Male"), 
     ", Female =", sum(data_clean$Sex == "Female"), "\n\n")
 
 # ==============================================================================
-# 6. SALVAR DADOS LIMPOS
+# 6. SAVE CLEAN DATA
 # ==============================================================================
 
-cat("[6/6] Salvando dados limpos...\n")
+cat("[6/6] Saving clean data...\n")
 
-# Criar diretório se não existir
+# Create directory if it doesn't exist
 if (!dir.exists("data/processed")) {
   dir.create("data/processed", recursive = TRUE)
-  cat("    ✓ Diretório data/processed criado\n")
+  cat("    ✓ Directory data/processed created\n")
 }
 
-# Salvar dados limpos
+# Save clean data
 write_csv(data_clean, "data/processed/cancer_data_clean.csv")
 
-cat("    ✓ Dados limpos salvos em: data/processed/cancer_data_clean.csv\n")
-cat("    - Total de registros limpos:", nrow(data_clean), "\n")
-cat("    - Total de variáveis:", ncol(data_clean), "\n\n")
+cat("    ✓ Clean data saved to: data/processed/cancer_data_clean.csv\n")
+cat("    - Total clean records:", nrow(data_clean), "\n")
+cat("    - Total variables:", ncol(data_clean), "\n\n")
 
 # ==============================================================================
-# RESUMO FINAL
+# FINAL SUMMARY
 # ==============================================================================
 
 cat("========================================\n")
-cat("RESUMO DA LIMPEZA\n")
+cat("CLEANING SUMMARY\n")
 cat("========================================\n")
-cat("Registros originais:     ", nrow(data), "\n")
-cat("Duplicatas removidas:    ", duplicatas, "\n")
-cat("Patient_ID NA removidos: ", na_patient_id, "\n")
-cat("Idades inválidas removidas:", idades_invalidas, "\n")
-cat("Registros finais:        ", nrow(data_clean), "\n")
-cat("Taxa de retenção:        ", 
+cat("Original records:       ", nrow(data), "\n")
+cat("Duplicates removed:     ", duplicates, "\n")
+cat("NA Patient_ID removed:  ", na_patient_id, "\n")
+cat("Invalid ages removed:   ", invalid_ages, "\n")
+cat("Final records:          ", nrow(data_clean), "\n")
+cat("Retention rate:         ", 
     round(100 * nrow(data_clean) / nrow(data), 2), "%\n")
 cat("========================================\n")
-cat("Limpeza concluída com sucesso!\n")
+cat("Cleaning completed successfully!\n")
 cat("========================================\n\n")
