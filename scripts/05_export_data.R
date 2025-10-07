@@ -1,41 +1,40 @@
 # ==============================================================================
-# Script 05: Exportação de Dados Limpos para Excel
-# Descrição: Exporta os dados oncológicos limpos para formato Excel (.xlsx)
-#            utilizando o pacote writexl
-# Autor: Pipeline de Limpeza de Dados Clínicos
-# Data: 2025-10-07
+# Script: 05_export_data.R
+# Description: Export clean clinical data to Excel format
+# Author: GiseleMalvezzi
+# Date: 2025-10-07
 # ==============================================================================
 
-# Carregar pacotes necessários
+# Load necessary packages
 library(writexl)
 
-# Definir caminhos de arquivos
+# Define file paths
 input_file <- "processed/cancer_data_clean.csv"
 output_file <- "processed/cancer_data_clean.xlsx"
 
-# Ler dados limpos do CSV
-cat("Lendo dados limpos de", input_file, "...\n")
+# Read clean data from CSV
+cat("Reading clean data from", input_file, "...\n")
 cancer_data_clean <- read.csv(input_file)
 
-# Exibir informações sobre os dados
-cat("\nInformações dos dados a serem exportados:\n")
-cat("Número de linhas:", nrow(cancer_data_clean), "\n")
-cat("Número de colunas:", ncol(cancer_data_clean), "\n")
-cat("Colunas:", paste(names(cancer_data_clean), collapse = ", "), "\n\n")
+# Display information about the data
+cat("\nInformation about data to be exported:\n")
+cat("Number of rows:", nrow(cancer_data_clean), "\n")
+cat("Number of columns:", ncol(cancer_data_clean), "\n")
+cat("Columns:", paste(names(cancer_data_clean), collapse = ", "), "\n\n")
 
-# Exportar para Excel
-cat("Exportando dados para", output_file, "...\n")
+# Export to Excel
+cat("Exporting data to", output_file, "...\n")
 write_xlsx(cancer_data_clean, output_file)
 
-# Verificar se o arquivo foi criado com sucesso
+# Verify if file was created successfully
 if (file.exists(output_file)) {
   file_size <- file.size(output_file)
-  cat("\n✓ SUCESSO: Dados exportados com sucesso!\n")
-  cat("  Arquivo:", output_file, "\n")
-  cat("  Tamanho:", round(file_size / 1024, 2), "KB\n")
-  cat("\nOs dados limpos estão prontos para análise no Excel.\n")
+  cat("\n✓ SUCCESS: Data exported successfully!\n")
+  cat("  File:", output_file, "\n")
+  cat("  Size:", round(file_size / 1024, 2), "KB\n")
+  cat("\nClean data is ready for analysis in Excel.\n")
 } else {
-  cat("\n✗ ERRO: Falha ao criar o arquivo Excel.\n")
+  cat("\n✗ ERROR: Failed to create Excel file.\n")
 }
 
-cat("\n=== Exportação concluída ===")
+cat("\n=== Export completed ===")
