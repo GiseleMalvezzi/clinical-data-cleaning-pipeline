@@ -1,96 +1,96 @@
 # ==============================================================================
 # Script: 01_import_data.R
-# Projeto: Clinical Data Cleaning Pipeline
-# Descrição: Importação e diagnóstico inicial de dados oncológicos
-# Autor: Gisele Malvezzi
-# Data: 2025-10-07
+# Project: Clinical Data Cleaning Pipeline
+# Description: Import and initial diagnosis of oncological data
+# Author: Gisele Malvezzi
+# Date: 2025-10-07
 # ==============================================================================
 
-# Carregando bibliotecas necessárias
-library(tidyverse)    # Manipulação de dados
-library(readr)        # Importação de arquivos CSV
-library(skimr)        # Overview detalhado dos dados
-library(janitor)      # Limpeza de nomes de variáveis
-library(lubridate)    # Manipulação de datas
+# Loading required libraries
+library(tidyverse)    # Data manipulation
+library(readr)        # CSV file import
+library(skimr)        # Detailed data overview
+library(janitor)      # Variable name cleaning
+library(lubridate)    # Date manipulation
 
 # ==============================================================================
-# 1. CONFIGURAÇÃO DE DIRETÓRIOS
+# 1. DIRECTORY CONFIGURATION
 # ==============================================================================
 
 cat("\n========================================\n")
-cat("INICIANDO IMPORTAÇÃO DE DADOS\n")
+cat("STARTING DATA IMPORT\n")
 cat("========================================\n\n")
 
-# Definindo diretórios
+# Defining directories
 dir_raw <- "data/raw/"
 dir_interim <- "data/interim/"
 
-# Verificando se os diretórios existem, caso contrário, cria
+# Checking if directories exist, otherwise create them
 if (!dir.exists(dir_interim)) {
   dir.create(dir_interim, recursive = TRUE)
-  cat("✓ Diretório 'data/interim/' criado\n")
+  cat("✓ Directory 'data/interim/' created\n")
 }
 
 # ==============================================================================
-# 2. IMPORTAÇÃO DOS DADOS
+# 2. DATA IMPORT
 # ==============================================================================
 
-cat("\n[1] Importando dados oncológicos...\n")
+cat("\n[1] Importing oncological data...\n")
 
-# Verificando se o arquivo existe
-arquivo_cancer <- paste0(dir_raw, "Cancer_Data.csv")
+# Checking if file exists
+file_cancer <- paste0(dir_raw, "Cancer_Data.csv")
 
-if (!file.exists(arquivo_cancer)) {
-  stop("ERRO: Arquivo 'Cancer_Data.csv' não encontrado em ", dir_raw)
+if (!file.exists(file_cancer)) {
+  stop("ERROR: File 'Cancer_Data.csv' not found in ", dir_raw)
 }
 
-# Importando dados
+# Importing data
 tryCatch({
   cancer_data <- read_csv(
-    arquivo_cancer,
+    file_cancer,
     col_types = cols(),
     locale = locale(encoding = "UTF-8")
   )
-  cat("✓ Dados importados com sucesso!\n")
+  cat("✓ Data imported successfully!\n")
 }, error = function(e) {
-  stop("ERRO ao importar dados: ", e$message)
+  stop("ERROR importing data: ", e$message)
 })
 
 # ==============================================================================
-# 3. DIAGNÓSTICO INICIAL DOS DADOS
+# 3. INITIAL DATA DIAGNOSIS
 # ==============================================================================
 
-cat("\n[2] Realizando diagnóstico inicial...\n\n")
+cat("\n[2] Performing initial diagnosis...\n\n")
 
-# 3.1 Dimensões do dataset
-cat("--- DIMENSÕES DO DATASET ---\n")
-cat("Número de observações (linhas):", nrow(cancer_data), "\n")
-cat("Número de variáveis (colunas):", ncol(cancer_data), "\n\n")
+# 3.1 Dataset dimensions
+cat("--- DATASET DIMENSIONS ---\n")
+cat("Number of observations (rows):", nrow(cancer_data), "\n")
+cat("Number of variables (columns):", ncol(cancer_data), "\n\n")
 
-# 3.2 Estrutura dos dados
-cat("--- ESTRUTURA DOS DADOS ---\n")
+# 3.2 Data structure
+cat("--- DATA STRUCTURE ---\n")
 glimpse(cancer_data)
 cat("\n")
 
-# 3.3 Nomes das variáveis
-cat("--- NOMES DAS VARIÁVEIS ---\n")
+# 3.3 Variable names
+cat("--- VARIABLE NAMES ---\n")
 cat(paste(names(cancer_data), collapse = ", "), "\n\n")
 
-# 3.4 Primeiras observações
-cat("--- PRIMEIRAS 10 OBSERVAÇÕES ---\n")
+# 3.4 First observations
+cat("--- FIRST 10 OBSERVATIONS ---\n")
 print(head(cancer_data, 10))
 cat("\n")
 
-# 3.5 Overview completo com skimr
-cat("--- OVERVIEW DETALHADO (SKIMR) ---\n")
+# 3.5 Complete overview with skimr
+cat("--- DETAILED OVERVIEW (SKIMR) ---\n")
 print(skim(cancer_data))
 cat("\n")
 
-# 3.6 Verificação de valores ausentes
-cat("--- ANÁLISE DE VALORES AUSENTES ---\n")
+# 3.6 Missing values check
+cat("--- MISSING VALUES ANALYSIS ---\n")
 missing_summary <- cancer_data %>%
   summarise(across(everything(), ~sum(is.na(.)))) %>%
-  pivot_longer(everything(), names_to = "Variável", values_to = "N_Missing") %>%
+  pivot_longer(everything(), names_to = "Variable", values_to = "N_Missing") %>%
   mutate(
     Pct_Missing = round(N_Missing / nrow(cancer_data) * 100, 2)
   ) %>%
@@ -99,73 +99,74 @@ missing_summary <- cancer_data %>%
 print(missing_summary)
 cat("\n")
 
-# 3.7 Verificação de duplicatas
-cat("--- VERIFICAÇÃO DE DUPLICATAS ---\n")
+# 3.7 Duplicate check
+cat("--- DUPLICATE CHECK ---\n")
 n_duplicates <- cancer_data %>%
   duplicated() %>%
   sum()
-cat("Número de linhas duplicadas:", n_duplicates, "\n\n")
 
-# 3.8 Sumário estatístico básico
-cat("--- SUMÁRIO ESTATÍSTICO ---\n")
+cat("Number of duplicate rows:", n_duplicates, "\n\n")
+
+# 3.8 Basic statistical summary
+cat("--- STATISTICAL SUMMARY ---\n")
 print(summary(cancer_data))
 cat("\n")
 
 # ==============================================================================
-# 4. SALVANDO DATASET INICIAL
+# 4. SAVING INITIAL DATASET
 # ==============================================================================
 
-cat("[3] Salvando dataset inicial...\n")
+cat("[3] Saving initial dataset...\n")
 
-# Salvando em data/interim
-arquivo_saida <- paste0(dir_interim, "cancer_data_inicial.csv")
+# Saving to data/interim
+output_file <- paste0(dir_interim, "cancer_data_initial.csv")
 
 tryCatch({
-  write_csv(cancer_data, arquivo_saida)
-  cat("✓ Dataset salvo em:", arquivo_saida, "\n")
+  write_csv(cancer_data, output_file)
+  cat("✓ Dataset saved at:", output_file, "\n")
 }, error = function(e) {
-  stop("ERRO ao salvar arquivo: ", e$message)
+  stop("ERROR saving file: ", e$message)
 })
 
 # ==============================================================================
-# 5. REGISTRO DE INFORMAÇÕES DO PROCESSO
+# 5. PROCESS INFORMATION LOG
 # ==============================================================================
 
-cat("\n[4] Gerando log de importação...\n")
+cat("\n[4] Generating import log...\n")
 
-# Criando registro do processo
-log_importacao <- list(
-  data_hora = Sys.time(),
-  arquivo_origem = arquivo_cancer,
-  arquivo_destino = arquivo_saida,
-  n_observacoes = nrow(cancer_data),
-  n_variaveis = ncol(cancer_data),
-  variaveis = names(cancer_data),
-  n_duplicatas = n_duplicates,
-  valores_ausentes = missing_summary
+# Creating process log
+import_log <- list(
+  datetime = Sys.time(),
+  source_file = file_cancer,
+  destination_file = output_file,
+  n_observations = nrow(cancer_data),
+  n_variables = ncol(cancer_data),
+  variables = names(cancer_data),
+  n_duplicates = n_duplicates,
+  missing_values = missing_summary
 )
 
-# Salvando log
-arquivo_log <- paste0("reports/audit_trails/log_importacao_", 
+# Saving log
+log_file <- paste0("reports/audit_trails/import_log_", 
                       format(Sys.time(), "%Y%m%d_%H%M%S"), ".rds")
 
 if (!dir.exists("reports/audit_trails/")) {
   dir.create("reports/audit_trails/", recursive = TRUE)
 }
 
-saveRDS(log_importacao, arquivo_log)
-cat("✓ Log salvo em:", arquivo_log, "\n")
+saveRDS(import_log, log_file)
+cat("✓ Log saved at:", log_file, "\n")
 
 # ==============================================================================
-# 6. FINALIZAÇÃO
+# 6. COMPLETION
 # ==============================================================================
 
 cat("\n========================================\n")
-cat("IMPORTAÇÃO CONCLUÍDA COM SUCESSO!\n")
+cat("IMPORT COMPLETED SUCCESSFULLY!\n")
 cat("========================================\n")
-cat("\nPróximo passo: Execute o script 02_validate_data.R\n\n")
+cat("\nNext step: Run script 02_validate_data.R\n\n")
 
-# Mensagem final
-message("✓ Script 01_import_data.R executado com sucesso!")
-message("  Dataset disponível no objeto: cancer_data")
-message("  Arquivo salvo: ", arquivo_saida)
+# Final message
+message("✓ Script 01_import_data.R executed successfully!")
+message("  Dataset available in object: cancer_data")
+message("  File saved: ", output_file)
