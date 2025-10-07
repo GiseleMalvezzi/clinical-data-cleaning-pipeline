@@ -1,7 +1,8 @@
 # ==============================================================================
 # Script: 05_export_data.R
+# Project: Clinical Data Cleaning Pipeline
 # Description: Export clean clinical data to Excel format
-# Author: GiseleMalvezzi
+# Author: Gisele Malvezzi
 # Date: 2025-10-07
 # ==============================================================================
 
